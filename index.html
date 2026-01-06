@@ -3,255 +3,174 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pelan-Pelan, adekk Bakal Baik-Baik Aja</title>
+<title>Untuk Kamu 🤍</title>
 
 <style>
-*{box-sizing:border-box}
-body{
-  margin:0;
-  height:100vh;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  background:linear-gradient(135deg,#ffd6e8,#e8d9ff);
-  font-family:Arial, sans-serif;
-  overflow:hidden;
-}
-.dark{
-  background:linear-gradient(135deg,#1f1f2e,#2c2c54);
-}
-.container{
-  position:relative;
-  background:rgba(255,255,255,0.92);
-  padding:25px;
-  border-radius:20px;
-  width:90%;
-  max-width:360px;
-  text-align:center;
-  box-shadow:0 10px 30px rgba(0,0,0,0.1);
-  z-index:5;
-}
-.dark .container{
-  background:rgba(30,30,50,0.95);
-}
-h1{
-  font-size:18px;
-  color:#444;
-  line-height:1.6;
-  margin-bottom:15px;
-}
-.dark h1{color:#eee;}
+  body{
+    margin:0;
+    font-family: "Poppins", sans-serif;
+    background: linear-gradient(135deg,#ffd6e8,#fff);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+  }
 
-button{
-  width:100%;
-  padding:12px;
-  margin:6px 0;
-  border:none;
-  border-radius:25px;
-  background:#ff8fb1;
-  color:white;
-  font-size:14px;
-}
+  .card{
+    background:white;
+    width:90%;
+    max-width:380px;
+    padding:25px;
+    border-radius:20px;
+    text-align:center;
+    box-shadow:0 10px 30px rgba(0,0,0,.15);
+  }
 
-#musicBtn{background:#b388ff}
+  h1{
+    font-size:22px;
+    margin-bottom:10px;
+  }
 
-.nameInput{
-  width:100%;
-  padding:12px;
-  border-radius:20px;
-  border:none;
-  margin-bottom:10px;
-  text-align:center;
-}
+  p{
+    font-size:16px;
+    line-height:1.5;
+  }
 
-.balloon{
-  background:#ffb6d5;
-  padding:12px;
-  margin:8px 0;
-  border-radius:30px;
-}
+  input{
+    width:100%;
+    padding:12px;
+    border-radius:12px;
+    border:1px solid #ddd;
+    font-size:16px;
+    margin-top:15px;
+  }
 
-.hidden{
-  display:none !important;
-}
+  button{
+    margin-top:20px;
+    padding:12px 20px;
+    border:none;
+    border-radius:12px;
+    background:#ff7aa2;
+    color:white;
+    font-size:16px;
+    cursor:pointer;
+    width:100%;
+    position:relative;
+    z-index:10;
+  }
 
-.chibi{
-  width:120px;
-  margin:15px auto;
-  animation:pop .6s ease;
-}
-@keyframes pop{
-  from{transform:scale(0);opacity:0}
-  to{transform:scale(1);opacity:1}
-}
+  button:hover{
+    opacity:.9;
+  }
 
-.heart{
-  position:fixed;
-  bottom:0;
-  font-size:20px;
-  animation:fly 3s linear;
-  pointer-events:none; /* 🔥 FIX KLIK */
-}
-@keyframes fly{
-  from{transform:translateY(0);opacity:1}
-  to{transform:translateY(-100vh);opacity:0}
-}
+  .hidden{
+    display:none !important;
+  }
+
+  .heart{
+    position:fixed;
+    top:-10px;
+    font-size:18px;
+    animation:fall linear forwards;
+    pointer-events:none;
+  }
+
+  @keyframes fall{
+    to{
+      transform:translateY(110vh);
+      opacity:0;
+    }
+  }
 </style>
 </head>
 
 <body>
 
-<div class="container">
-  <button id="musicBtn" onclick="toggleMusic()">🎧 Musik: OFF</button>
-  <button onclick="toggleDark()">🌙 Mode Malam</button>
+<div class="card">
+  <h1 id="title">Hai 🤍</h1>
+  <p id="text">Aku bikinin ini khusus buat kamu.</p>
 
-  <h1 id="text"></h1>
+  <input id="nameInput" placeholder="Tulis nama kamu di sini 🤍">
 
-  <input id="nameInput" class="nameInput"
-         placeholder="Tulis nama kamu di sini 🤍">
-
-  <div id="buttons"></div>
-  <div id="game" class="hidden"></div>
-
-  <img id="chibi" class="hidden chibi"
-       src="https://i.imgur.com/1X6R0ZL.png">
+  <div id="buttons">
+    <button id="startBtn">Mulai</button>
+  </div>
 </div>
 
-<audio id="music" loop>
-  <source src="https://cdn.pixabay.com/audio/2022/10/25/audio_946bfa5d9c.mp3">
-</audio>
-
 <script>
-const text = document.getElementById("text");
-const buttons = document.getElementById("buttons");
-const game = document.getElementById("game");
-const nameInput = document.getElementById("nameInput");
-const chibi = document.getElementById("chibi");
-const music = document.getElementById("music");
-const musicBtn = document.getElementById("musicBtn");
+  const title = document.getElementById("title");
+  const text = document.getElementById("text");
+  const nameInput = document.getElementById("nameInput");
+  const buttons = document.getElementById("buttons");
+  const startBtn = document.getElementById("startBtn");
 
-let scene = 0;
-let playing = false;
-let userName = localStorage.getItem("userName");
+  let userName = localStorage.getItem("userName");
+  let scene = 0;
 
-start();
+  startBtn.addEventListener("click", handleClick);
 
-function start(){
-  scene = 0;
-  chibi.classList.add("hidden");
-  game.classList.add("hidden");
+  function handleClick(){
+    if(!userName){
+      saveName();
+    }else{
+      next();
+    }
+  }
 
-  if(!userName){
-    text.innerHTML = "Sebelum mulai…<br>aku boleh tahu nama kamu? 🤍";
-    nameInput.classList.remove("hidden");
-    buttons.innerHTML = <button onclick="saveName()">Mulai</button>;
-  }else{
+  function saveName(){
+    const value = nameInput.value.trim();
+    if(value === ""){
+      alert("Tulis nama kamu dulu ya 🤍");
+      return;
+    }
+    userName = value;
+    localStorage.setItem("userName", userName);
     nameInput.classList.add("hidden");
-    text.innerHTML = Hai ${userName} 🤍<br>Aku di sini buat kamu.;
-    buttons.innerHTML = <button onclick="next()">Lanjut</button>;
+    next();
   }
-}
 
-function saveName(){
-  const value = nameInput.value.trim();
-  if(value === ""){
-    alert("Tulis nama kamu dulu ya 🤍");
-    return;
+  function next(){
+    scene++;
+
+    if(scene === 1){
+      title.innerHTML = Hai ${userName} 🤍;
+      text.innerHTML = "Aku tahu adekk lagi capek banget sekarang.";
+    }
+    else if(scene === 2){
+      text.innerHTML = "Putus itu perlu,supaya adek bisa makin kuat.";
+    }
+    else if(scene === 3){
+      text.innerHTML = "Tapi percayalah… adekk masih berharga, bahkan lebih dari yang kamu kira.";
+    }
+    else if(scene === 4){
+      text.innerHTML = Aku bangga sama kamu, ${userName}. adekk kuat 🤍;
+      buttons.innerHTML = <button onclick="resetAll()">Ulangi</button>;
+      startHearts();
+    }
   }
-  userName = value;
-  localStorage.setItem("userName", userName);
-  nameInput.classList.add("hidden");
-  start();
-}
 
-function next(){
-  scene++;
-
-  if(scene === 1){
-    text.innerHTML = ${userName}, perasaan adekk hari ini gimana?;
-    buttons.innerHTML = `
-      <button onclick="next()">😢 Sedih</button>
-      <button onclick="next()">😤 Kesel</button>
-      <button onclick="next()">😶 Bingung</button>
-    `;
+  function resetAll(){
+    localStorage.removeItem("userName");
+    location.reload();
   }
-  else if(scene === 2){
-    text.innerHTML = "Klik satu-satu, lepasin yang berat 🎈";
-    buttons.innerHTML = "";
-    game.classList.remove("hidden");
-    game.innerHTML = `
-      <div class="balloon" onclick="pop(this)">Kenangan</div>
-      <div class="balloon" onclick="pop(this)">Chat Lama</div>
-      <div class="balloon" onclick="pop(this)">Janji Dia</div>
-      <button onclick="next()">Lanjut</button>
-    `;
+
+  function startHearts(){
+    setInterval(()=>{
+      const heart = document.createElement("div");
+      heart.className = "heart";
+      heart.innerHTML = "🤍";
+      heart.style.left = Math.random()*100 + "vw";
+      heart.style.animationDuration = (3 + Math.random()*3) + "s";
+      document.body.appendChild(heart);
+      setTimeout(()=>heart.remove(),6000);
+    },300);
   }
-  else if(scene === 3){
-    game.classList.add("hidden");
-    text.innerHTML = Kalau hari ini berat,<br>${userName}, kamu boleh istirahat 🤍;
-    buttons.innerHTML = <button onclick="hug()">Peluk aku</button>;
+
+  if(userName){
+    nameInput.classList.add("hidden");
+    title.innerHTML = Hai ${userName} 🤍;
+    text.innerHTML = "Aku di sini buat kamu.";
   }
-  else{
-    text.innerHTML = "Kalau suatu hari adekk capek lagi,<br>adekk boleh balik ke sini 🤍";
-    buttons.innerHTML = `
-      <button onclick="shareWeb()">💌 Kirim ke Teman</button>
-      <button onclick="resetAll()">Ulangi</button>
-    `;
-  }
-}
-
-function pop(el){
-  el.innerHTML = " adekk jangan sedih lagii yaa🤍";
-  el.style.background = "#caffbf";
-}
-
-function hug(){
-  text.innerHTML = peluk jauhh, ${userName} 🤍;
-  chibi.classList.remove("hidden");
-  if(navigator.vibrate) navigator.vibrate(300);
-}
-
-function toggleMusic(){
-  if(!playing){
-    music.play();
-    musicBtn.innerHTML = "🎧 Musik: ON";
-  }else{
-    music.pause();
-    musicBtn.innerHTML = "🎧 Musik: OFF";
-  }
-  playing = !playing;
-}
-
-function toggleDark(){
-  document.body.classList.toggle("dark");
-}
-
-function shareWeb(){
-  if(navigator.share){
-    navigator.share({
-      title:"Pelan-Pelan, adekk Bakal Baik-Baik Aja",
-      text:Semangat ya ${userName} 🤍,
-      url:location.href
-    });
-  }else{
-    alert("Copy link ini ya 🤍\n" + location.href);
-  }
-}
-
-function resetAll(){
-  localStorage.removeItem("userName");
-  location.reload();
-}
-
-/* LOVE TERBANG */
-setInterval(()=>{
-  const h = document.createElement("div");
-  h.className = "heart";
-  h.innerHTML = "💖";
-  h.style.left = Math.random()*100 + "vw";
-  document.body.appendChild(h);
-  setTimeout(()=>h.remove(),3000);
-},900);
 </script>
 
 </body>
