@@ -1,202 +1,67 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Buat adekk 🤍</title>
-
-<style>
-body{
-  margin:0;
-  font-family:system-ui, sans-serif;
-  background:linear-gradient(135deg,#ffd6e8,#fff);
-  overflow:hidden;
-}
-
-.container{
-  height:100vh;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  padding:20px;
-  position:relative;
-  z-index:2;
-}
-
-.card{
-  background:white;
-  width:100%;
-  max-width:360px;
-  padding:22px;
-  border-radius:18px;
-  box-shadow:0 12px 30px rgba(0,0,0,.15);
-  text-align:center;
-}
-
-h1{font-size:22px;margin:0 0 10px}
-p{font-size:15px;line-height:1.5}
-
-input{
-  width:100%;
-  padding:12px;
-  border-radius:12px;
-  border:1px solid #ddd;
-  margin-top:14px;
-  font-size:15px;
-}
-
-button{
-  margin-top:18px;
-  width:100%;
-  padding:12px;
-  border:none;
-  border-radius:12px;
-  background:#ff7aa2;
-  color:white;
-  font-size:15px;
-  cursor:pointer;
-}
-
-button:active{transform:scale(.97)}
-.hidden{display:none}
-
-#game{
-  margin-top:14px;
-  height:260px;
-  background:#fff0f6;
-  border-radius:14px;
-  position:relative;
-  overflow:hidden;
-}
-
-.item{
-  position:absolute;
-  top:-30px;
-  font-size:26px;
-  animation:fall linear forwards;
-}
-
-@keyframes fall{
-  to{transform:translateY(320px)}
-}
-
-.float{
-  position:fixed;
-  top:-20px;
-  font-size:18px;
-  pointer-events:none;
-  animation:float linear forwards;
-}
-
-@keyframes float{
-  to{transform:translateY(110vh);opacity:0}
-}
-
-.music{
-  position:fixed;
-  bottom:16px;
-  right:16px;
-  width:44px;
-  height:44px;
-  background:white;
-  border-radius:50%;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  box-shadow:0 6px 16px rgba(0,0,0,.2);
-  cursor:pointer;
-  z-index:5;
-}
-</style>
-</head>
-
-<body>
-
-<div class="music" onclick="toggleMusic()">🎵</div>
-
-<div class="container">
-  <div class="card">
-    <h1 id="title">Hai 🤍</h1>
-    <p id="text">Aku bikin ini biar adek senang.</p>
-
-    <input id="name" placeholder="Tulis nama kamu di sini 🤍">
-
-    <div id="game" class="hidden"></div>
-
-    <button id="btn">Lanjut</button>
-  </div>
-</div>
-
 <script>
-/* ===== STATE ===== */
 let step = 0;
 let nama = "";
 let score = 0;
 let spawn;
 let audioCtx, osc;
 
-/* ===== ELEMENT ===== */
 const title = document.getElementById("title");
 const text = document.getElementById("text");
 const nameInput = document.getElementById("name");
 const btn = document.getElementById("btn");
 const game = document.getElementById("game");
 
-/* ===== FLOW ===== */
-btn.onclick = () => {
-  step++;
+btn.onclick = handleNext;
 
-  if(step===1){
-    if(nameInput.value.trim()===""){
+function handleNext(){
+
+  if(step === 0){
+    if(nameInput.value.trim() === ""){
       alert("Isi nama dulu ya 🤍");
-      step--; return;
+      return;
     }
     nama = nameInput.value.trim();
     nameInput.classList.add("hidden");
     title.innerHTML = Hai ${nama} 🤍;
     text.innerHTML = "Tenang… ini cuma iseng kok 😌";
+    step = 1;
+    return;
   }
 
-  else if(step===2){
+  if(step === 1){
     text.innerHTML = "Klik 🤍 sebanyak mungkin.<br>Hindari 😈 ya.";
     btn.innerText = "Mulai";
+    step = 2;
+    return;
   }
 
-  else if(step===3){
+  if(step === 2){
     btn.classList.add("hidden");
     startGame();
+    step = 3;
+    return;
   }
 
-  else if(step===4){
-    btn.classList.remove("hidden");
-    btn.innerText = "Main Lagi";
-    game.classList.add("hidden");
-
-    text.innerHTML =
-      score<6 ? "Gapapa 🤍 yang penting ketawa dikit." :
-      score<12 ? "Nah kan… senyum 😆" :
-      "Tuh lihat 😌 adekk harus kuat yaaa.";
-
-    title.innerHTML = Makasih ya, ${nama};
+  if(step === 4){
+    location.reload();
   }
-};
+}
 
-/* ===== GAME ===== */
 function startGame(){
   score = 0;
-  game.innerHTML="";
+  game.innerHTML = "";
   game.classList.remove("hidden");
 
   spawn = setInterval(()=>{
     const el = document.createElement("div");
-    const good = Math.random()>0.3;
-    el.className="item";
-    el.innerHTML = good?"🤍":"😈";
-    el.style.left=Math.random()*90+"%";
-    el.style.animationDuration=(3+Math.random()*2)+"s";
+    const good = Math.random() > 0.3;
+    el.className = "item";
+    el.innerHTML = good ? "🤍" : "😈";
+    el.style.left = Math.random()*90 + "%";
+    el.style.animationDuration = (3+Math.random()*2)+"s";
 
-    el.onclick=()=>{
-      score += good?1:-1;
+    el.onclick = ()=>{
+      score += good ? 1 : -1;
       el.remove();
     };
 
@@ -204,41 +69,46 @@ function startGame(){
     setTimeout(()=>el.remove(),5000);
   },600);
 
-  setTimeout(()=>{
-    clearInterval(spawn);
-    step=3;
-    step++;
-    btn.click();
-  },20000);
+  setTimeout(endGame, 20000);
 }
 
-/* ===== MUSIC (BUILT-IN) ===== */
+function endGame(){
+  clearInterval(spawn);
+  game.classList.add("hidden");
+  btn.classList.remove("hidden");
+  btn.innerText = "Main Lagi";
+  step = 4;
+
+  text.innerHTML =
+    score < 6 ? "Gapapa 🤍 yang penting ketawa dikit." :
+    score < 12 ? "Nah kan… senyum 😆" :
+    "Tuh lihat 😌 adek harus kuat yaaa.";
+
+  title.innerHTML = "Makasih ya, ${nama}";
+}
+
 function toggleMusic(){
   if(!audioCtx){
     audioCtx = new (window.AudioContext||window.webkitAudioContext)();
     osc = audioCtx.createOscillator();
-    osc.type="sine";
-    osc.frequency.value=220;
+    osc.type = "sine";
+    osc.frequency.value = 220;
     osc.connect(audioCtx.destination);
     osc.start();
-  }else if(audioCtx.state==="running"){
+  }else if(audioCtx.state === "running"){
     audioCtx.suspend();
   }else{
     audioCtx.resume();
   }
 }
 
-/* ===== FLOATING LOVE ===== */
 setInterval(()=>{
-  const h=document.createElement("div");
-  h.className="float";
-  h.innerHTML="🤍";
-  h.style.left=Math.random()*100+"vw";
-  h.style.animationDuration=(5+Math.random()*4)+"s";
+  const h = document.createElement("div");
+  h.className = "float";
+  h.innerHTML = "🤍";
+  h.style.left = Math.random()*100 + "vw";
+  h.style.animationDuration = (5+Math.random()*4)+"s";
   document.body.appendChild(h);
   setTimeout(()=>h.remove(),9000);
 },700);
 </script>
-
-</body>
-</html>
