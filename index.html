@@ -1,26 +1,122 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title> Adekk Bakal Baik-Baik Aja yaa</title>
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pelan-Pelan, adekk Bakal Baik-Baik Aja</title>
+
+<style>
+body{
+  margin:0;
+  height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:linear-gradient(135deg,#ffd6e8,#e8d9ff);
+  font-family:Arial, sans-serif;
+}
+.container{
+  background:rgba(255,255,255,0.9);
+  padding:25px;
+  border-radius:20px;
+  width:90%;
+  max-width:360px;
+  text-align:center;
+  box-shadow:0 10px 30px rgba(0,0,0,0.1);
+}
+h1{
+  font-size:18px;
+  color:#444;
+  line-height:1.6;
+  margin-bottom:20px;
+}
+button{
+  width:100%;
+  padding:12px;
+  margin:8px 0;
+  border:none;
+  border-radius:25px;
+  background:#ff8fb1;
+  color:white;
+  font-size:14px;
+}
+.balloon{
+  background:#ffb6d5;
+  padding:12px;
+  margin:8px 0;
+  border-radius:30px;
+}
+.hidden{display:none;}
+</style>
 </head>
+
 <body>
 
 <div class="container">
-
-  <!-- SCENE TEXT -->
   <h1 id="text"></h1>
-
-  <!-- BUTTON AREA -->
   <div id="buttons"></div>
-
-  <!-- GAME AREA -->
   <div id="game" class="hidden"></div>
-
 </div>
 
-<script src="script.js"></script>
+<script>
+const text = document.getElementById("text");
+const buttons = document.getElementById("buttons");
+const game = document.getElementById("game");
+let scene = 0;
+
+start();
+
+function start(){
+  text.innerHTML = "Aku tahu…<br>hari ini adekk capek dan pura-pura kuat.";
+  buttons.innerHTML = '<button onclick="next()">Aku di sini</button>';
+}
+
+function next(){
+  scene++;
+
+  if(scene===1){
+    text.innerHTML = "Perasaan adekk hari ini gimana?";
+    buttons.innerHTML = `
+      <button onclick="next()">😢 Masih sedih</button>
+      <button onclick="next()">😤 Kesel</button>
+      <button onclick="next()">😶 Bingung</button>
+    `;
+  }
+
+  else if(scene===2){
+    text.innerHTML = "Klik satu-satu, lepasin yang berat 🎈";
+    buttons.innerHTML = "";
+    game.classList.remove("hidden");
+    game.innerHTML = `
+      <div class="balloon" onclick="pop(this)">Kenangan</div>
+      <div class="balloon" onclick="pop(this)">Chat Lama</div>
+      <div class="balloon" onclick="pop(this)">Janji Dia</div>
+      <button onclick="next()">Lanjut</button>
+    `;
+  }
+
+  else if(scene===3){
+    game.classList.add("hidden");
+    text.innerHTML = "Kalau hari ini berat,<br>nggak apa-apa istirahat 🤍";
+    buttons.innerHTML = '<button onclick="hug()">Peluk aku</button>';
+  }
+
+  else{
+    text.innerHTML = "Pelan-pelan ya…<br>adekk pasti bakal baik-baik aja 🌱";
+    buttons.innerHTML = '<button onclick="start();scene=0;">Ulangi</button>';
+  }
+}
+
+function pop(el){
+  el.innerHTML = "adekk nggak harus kuat hari ini 🤍";
+  el.style.background="#caffbf";
+}
+
+function hug(){
+  text.innerHTML = "pelukk jauhh 🤍";
+  if(navigator.vibrate) navigator.vibrate(200);
+}
+</script>
+
 </body>
 </html>
