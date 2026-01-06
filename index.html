@@ -6,6 +6,7 @@
 <title>Pelan-Pelan, adekk Bakal Baik-Baik Aja</title>
 
 <style>
+*{box-sizing:border-box}
 body{
   margin:0;
   height:100vh;
@@ -20,13 +21,15 @@ body{
   background:linear-gradient(135deg,#1f1f2e,#2c2c54);
 }
 .container{
-  background:rgba(255,255,255,0.9);
+  position:relative;
+  background:rgba(255,255,255,0.92);
   padding:25px;
   border-radius:20px;
   width:90%;
   max-width:360px;
   text-align:center;
   box-shadow:0 10px 30px rgba(0,0,0,0.1);
+  z-index:5;
 }
 .dark .container{
   background:rgba(30,30,50,0.95);
@@ -38,6 +41,7 @@ h1{
   margin-bottom:15px;
 }
 .dark h1{color:#eee;}
+
 button{
   width:100%;
   padding:12px;
@@ -48,14 +52,9 @@ button{
   color:white;
   font-size:14px;
 }
-#musicBtn{background:#b388ff;}
-.hidden{display:none;}
-.balloon{
-  background:#ffb6d5;
-  padding:12px;
-  margin:8px 0;
-  border-radius:30px;
-}
+
+#musicBtn{background:#b388ff}
+
 .nameInput{
   width:100%;
   padding:12px;
@@ -64,24 +63,38 @@ button{
   margin-bottom:10px;
   text-align:center;
 }
+
+.balloon{
+  background:#ffb6d5;
+  padding:12px;
+  margin:8px 0;
+  border-radius:30px;
+}
+
+.hidden{
+  display:none !important;
+}
+
 .chibi{
   width:120px;
   margin:15px auto;
-  animation:pop 0.6s ease;
+  animation:pop .6s ease;
 }
 @keyframes pop{
-  from{transform:scale(0);opacity:0;}
-  to{transform:scale(1);opacity:1;}
+  from{transform:scale(0);opacity:0}
+  to{transform:scale(1);opacity:1}
 }
+
 .heart{
   position:fixed;
   bottom:0;
   font-size:20px;
   animation:fly 3s linear;
+  pointer-events:none; /* 🔥 FIX KLIK */
 }
 @keyframes fly{
-  from{transform:translateY(0);opacity:1;}
-  to{transform:translateY(-100vh);opacity:0;}
+  from{transform:translateY(0);opacity:1}
+  to{transform:translateY(-100vh);opacity:0}
 }
 </style>
 </head>
@@ -93,13 +106,15 @@ button{
   <button onclick="toggleDark()">🌙 Mode Malam</button>
 
   <h1 id="text"></h1>
-  <input id="nameInput" class="nameInput" placeholder="Alvina Khairunnisa">
+
+  <input id="nameInput" class="nameInput"
+         placeholder="Tulis nama kamu di sini 🤍">
 
   <div id="buttons"></div>
   <div id="game" class="hidden"></div>
 
   <img id="chibi" class="hidden chibi"
-   src="https://i.imgur.com/1X6R0ZL.png">
+       src="https://i.imgur.com/1X6R0ZL.png">
 </div>
 
 <audio id="music" loop>
@@ -107,41 +122,44 @@ button{
 </audio>
 
 <script>
-const text=document.getElementById("text");
-const buttons=document.getElementById("buttons");
-const game=document.getElementById("game");
-const nameInput=document.getElementById("nameInput");
-const chibi=document.getElementById("chibi");
-const music=document.getElementById("music");
-const musicBtn=document.getElementById("musicBtn");
+const text = document.getElementById("text");
+const buttons = document.getElementById("buttons");
+const game = document.getElementById("game");
+const nameInput = document.getElementById("nameInput");
+const chibi = document.getElementById("chibi");
+const music = document.getElementById("music");
+const musicBtn = document.getElementById("musicBtn");
 
-let scene=0;
-let playing=false;
-let userName=localStorage.getItem("Alvina Khairunnisa");
+let scene = 0;
+let playing = false;
+let userName = localStorage.getItem("userName");
 
 start();
 
 function start(){
-  scene=0;
+  scene = 0;
   chibi.classList.add("hidden");
   game.classList.add("hidden");
 
   if(!userName){
-    text.innerHTML="Sebelum mulai…<br>aku boleh tahu nama kamu? 🤍";
-    buttons.innerHTML=<button onclick="saveName()">Mulai</button>;
+    text.innerHTML = "Sebelum mulai…<br>aku boleh tahu nama kamu? 🤍";
+    nameInput.classList.remove("hidden");
+    buttons.innerHTML = <button onclick="saveName()">Mulai</button>;
   }else{
     nameInput.classList.add("hidden");
-    text.innerHTML=Hai ${userName} 🤍<br>Aku di sini buat kamu.;
-    buttons.innerHTML=<button onclick="next()">Lanjut</button>;
+    text.innerHTML = Hai ${userName} 🤍<br>Aku di sini buat kamu.;
+    buttons.innerHTML = <button onclick="next()">Lanjut</button>;
   }
 }
 
 function saveName(){
-  if(nameInput.value.trim()===""){
-    alert("Isi dulu ya 🤍");return;
+  const value = nameInput.value.trim();
+  if(value === ""){
+    alert("Tulis nama kamu dulu ya 🤍");
+    return;
   }
-  userName=nameInput.value;
-  localStorage.setItem("userName",userName);
+  userName = value;
+  localStorage.setItem("userName", userName);
   nameInput.classList.add("hidden");
   start();
 }
@@ -149,43 +167,46 @@ function saveName(){
 function next(){
   scene++;
 
-  if(scene===1){
-    text.innerHTML=${userName}, perasaan kamu hari ini gimana?;
-    buttons.innerHTML=`
+  if(scene === 1){
+    text.innerHTML = ${userName}, perasaan adekk hari ini gimana?;
+    buttons.innerHTML = `
       <button onclick="next()">😢 Sedih</button>
       <button onclick="next()">😤 Kesel</button>
-      <button onclick="next()">😶 Bingung</button>`;
+      <button onclick="next()">😶 Bingung</button>
+    `;
   }
-  else if(scene===2){
-    text.innerHTML="Klik satu-satu, lepasin yang berat 🎈";
-    buttons.innerHTML="";
+  else if(scene === 2){
+    text.innerHTML = "Klik satu-satu, lepasin yang berat 🎈";
+    buttons.innerHTML = "";
     game.classList.remove("hidden");
-    game.innerHTML=`
+    game.innerHTML = `
       <div class="balloon" onclick="pop(this)">Kenangan</div>
       <div class="balloon" onclick="pop(this)">Chat Lama</div>
       <div class="balloon" onclick="pop(this)">Janji Dia</div>
-      <button onclick="next()">Lanjut</button>`;
+      <button onclick="next()">Lanjut</button>
+    `;
   }
-  else if(scene===3){
+  else if(scene === 3){
     game.classList.add("hidden");
-    text.innerHTML=Kalau hari ini berat,<br>${userName}, kamu boleh istirahat 🤍;
-    buttons.innerHTML=<button onclick="hug()">Peluk aku</button>;
+    text.innerHTML = Kalau hari ini berat,<br>${userName}, kamu boleh istirahat 🤍;
+    buttons.innerHTML = <button onclick="hug()">Peluk aku</button>;
   }
   else{
-    text.innerHTML="Kalau suatu hari adekk capek lagi,<br>adekk boleh balik ke sini 🤍";
-    buttons.innerHTML=`
+    text.innerHTML = "Kalau suatu hari adekk capek lagi,<br>adekk boleh balik ke sini 🤍";
+    buttons.innerHTML = `
       <button onclick="shareWeb()">💌 Kirim ke Teman</button>
-      <button onclick="start()">Ulangi</button>`;
+      <button onclick="resetAll()">Ulangi</button>
+    `;
   }
 }
 
 function pop(el){
-  el.innerHTML="adekk nggak harus kuat hari ini 🤍";
-  el.style.background="#caffbf";
+  el.innerHTML = " adekk jangan sedih lagii yaa🤍";
+  el.style.background = "#caffbf";
 }
 
 function hug(){
-  text.innerHTML=pelukk jauhh, ${userName} 🤍;
+  text.innerHTML = peluk jauhh, ${userName} 🤍;
   chibi.classList.remove("hidden");
   if(navigator.vibrate) navigator.vibrate(300);
 }
@@ -193,12 +214,12 @@ function hug(){
 function toggleMusic(){
   if(!playing){
     music.play();
-    musicBtn.innerHTML="🎧 Musik: ON";
+    musicBtn.innerHTML = "🎧 Musik: ON";
   }else{
     music.pause();
-    musicBtn.innerHTML="🎧 Musik: OFF";
+    musicBtn.innerHTML = "🎧 Musik: OFF";
   }
-  playing=!playing;
+  playing = !playing;
 }
 
 function toggleDark(){
@@ -209,19 +230,25 @@ function shareWeb(){
   if(navigator.share){
     navigator.share({
       title:"Pelan-Pelan, adekk Bakal Baik-Baik Aja",
-      text:Semangat ya ${Adekku} 🤍,
+      text:Semangat ya ${userName} 🤍,
       url:location.href
     });
   }else{
-    alert("Copy link ini ya 🤍\n"+location.href);
+    alert("Copy link ini ya 🤍\n" + location.href);
   }
 }
 
+function resetAll(){
+  localStorage.removeItem("userName");
+  location.reload();
+}
+
+/* LOVE TERBANG */
 setInterval(()=>{
-  const h=document.createElement("div");
-  h.className="heart";
-  h.innerHTML="💖";
-  h.style.left=Math.random()*100+"vw";
+  const h = document.createElement("div");
+  h.className = "heart";
+  h.innerHTML = "💖";
+  h.style.left = Math.random()*100 + "vw";
   document.body.appendChild(h);
   setTimeout(()=>h.remove(),3000);
 },900);
