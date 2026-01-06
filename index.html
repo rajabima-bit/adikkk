@@ -14,6 +14,10 @@ body{
   justify-content:center;
   background:linear-gradient(135deg,#ffd6e8,#e8d9ff);
   font-family:Arial, sans-serif;
+  overflow:hidden;
+}
+.dark{
+  background:linear-gradient(135deg,#1f1f2e,#2c2c54);
 }
 .container{
   background:rgba(255,255,255,0.9);
@@ -24,98 +28,203 @@ body{
   text-align:center;
   box-shadow:0 10px 30px rgba(0,0,0,0.1);
 }
+.dark .container{
+  background:rgba(30,30,50,0.95);
+}
 h1{
   font-size:18px;
   color:#444;
   line-height:1.6;
-  margin-bottom:20px;
+  margin-bottom:15px;
 }
+.dark h1{color:#eee;}
 button{
   width:100%;
   padding:12px;
-  margin:8px 0;
+  margin:6px 0;
   border:none;
   border-radius:25px;
   background:#ff8fb1;
   color:white;
   font-size:14px;
 }
+#musicBtn{background:#b388ff;}
+.hidden{display:none;}
 .balloon{
   background:#ffb6d5;
   padding:12px;
   margin:8px 0;
   border-radius:30px;
 }
-.hidden{display:none;}
+.nameInput{
+  width:100%;
+  padding:12px;
+  border-radius:20px;
+  border:none;
+  margin-bottom:10px;
+  text-align:center;
+}
+.chibi{
+  width:120px;
+  margin:15px auto;
+  animation:pop 0.6s ease;
+}
+@keyframes pop{
+  from{transform:scale(0);opacity:0;}
+  to{transform:scale(1);opacity:1;}
+}
+.heart{
+  position:fixed;
+  bottom:0;
+  font-size:20px;
+  animation:fly 3s linear;
+}
+@keyframes fly{
+  from{transform:translateY(0);opacity:1;}
+  to{transform:translateY(-100vh);opacity:0;}
+}
 </style>
 </head>
 
 <body>
 
 <div class="container">
+  <button id="musicBtn" onclick="toggleMusic()">🎧 Musik: OFF</button>
+  <button onclick="toggleDark()">🌙 Mode Malam</button>
+
   <h1 id="text"></h1>
+  <input id="nameInput" class="nameInput" placeholder="Alvina Khairunnisa">
+
   <div id="buttons"></div>
   <div id="game" class="hidden"></div>
+
+  <img id="chibi" class="hidden chibi"
+   src="https://i.imgur.com/1X6R0ZL.png">
 </div>
 
+<audio id="music" loop>
+  <source src="https://cdn.pixabay.com/audio/2022/10/25/audio_946bfa5d9c.mp3">
+</audio>
+
 <script>
-const text = document.getElementById("text");
-const buttons = document.getElementById("buttons");
-const game = document.getElementById("game");
-let scene = 0;
+const text=document.getElementById("text");
+const buttons=document.getElementById("buttons");
+const game=document.getElementById("game");
+const nameInput=document.getElementById("nameInput");
+const chibi=document.getElementById("chibi");
+const music=document.getElementById("music");
+const musicBtn=document.getElementById("musicBtn");
+
+let scene=0;
+let playing=false;
+let userName=localStorage.getItem("Alvina Khairunnisa");
 
 start();
 
 function start(){
-  text.innerHTML = "Aku tahu…<br>hari ini adekk capek dan pura-pura kuat.";
-  buttons.innerHTML = '<button onclick="next()">Aku di sini</button>';
+  scene=0;
+  chibi.classList.add("hidden");
+  game.classList.add("hidden");
+
+  if(!userName){
+    text.innerHTML="Sebelum mulai…<br>aku boleh tahu nama kamu? 🤍";
+    buttons.innerHTML=<button onclick="saveName()">Mulai</button>;
+  }else{
+    nameInput.classList.add("hidden");
+    text.innerHTML=Hai ${userName} 🤍<br>Aku di sini buat kamu.;
+    buttons.innerHTML=<button onclick="next()">Lanjut</button>;
+  }
+}
+
+function saveName(){
+  if(nameInput.value.trim()===""){
+    alert("Isi dulu ya 🤍");return;
+  }
+  userName=nameInput.value;
+  localStorage.setItem("userName",userName);
+  nameInput.classList.add("hidden");
+  start();
 }
 
 function next(){
   scene++;
 
   if(scene===1){
-    text.innerHTML = "Perasaan adekk hari ini gimana?";
-    buttons.innerHTML = `
-      <button onclick="next()">😢 Masih sedih</button>
+    text.innerHTML=${userName}, perasaan kamu hari ini gimana?;
+    buttons.innerHTML=`
+      <button onclick="next()">😢 Sedih</button>
       <button onclick="next()">😤 Kesel</button>
-      <button onclick="next()">😶 Bingung</button>
-    `;
+      <button onclick="next()">😶 Bingung</button>`;
   }
-
   else if(scene===2){
-    text.innerHTML = "Klik satu-satu, lepasin yang berat 🎈";
-    buttons.innerHTML = "";
+    text.innerHTML="Klik satu-satu, lepasin yang berat 🎈";
+    buttons.innerHTML="";
     game.classList.remove("hidden");
-    game.innerHTML = `
+    game.innerHTML=`
       <div class="balloon" onclick="pop(this)">Kenangan</div>
       <div class="balloon" onclick="pop(this)">Chat Lama</div>
       <div class="balloon" onclick="pop(this)">Janji Dia</div>
-      <button onclick="next()">Lanjut</button>
-    `;
+      <button onclick="next()">Lanjut</button>`;
   }
-
   else if(scene===3){
     game.classList.add("hidden");
-    text.innerHTML = "Kalau hari ini berat,<br>nggak apa-apa istirahat 🤍";
-    buttons.innerHTML = '<button onclick="hug()">Peluk aku</button>';
+    text.innerHTML=Kalau hari ini berat,<br>${userName}, kamu boleh istirahat 🤍;
+    buttons.innerHTML=<button onclick="hug()">Peluk aku</button>;
   }
-
   else{
-    text.innerHTML = "Pelan-pelan ya…<br>adekk pasti bakal baik-baik aja 🌱";
-    buttons.innerHTML = '<button onclick="start();scene=0;">Ulangi</button>';
+    text.innerHTML="Kalau suatu hari adekk capek lagi,<br>adekk boleh balik ke sini 🤍";
+    buttons.innerHTML=`
+      <button onclick="shareWeb()">💌 Kirim ke Teman</button>
+      <button onclick="start()">Ulangi</button>`;
   }
 }
 
 function pop(el){
-  el.innerHTML = "adekk nggak harus kuat hari ini 🤍";
+  el.innerHTML="adekk nggak harus kuat hari ini 🤍";
   el.style.background="#caffbf";
 }
 
 function hug(){
-  text.innerHTML = "pelukk jauhh 🤍";
-  if(navigator.vibrate) navigator.vibrate(200);
+  text.innerHTML=pelukk jauhh, ${userName} 🤍;
+  chibi.classList.remove("hidden");
+  if(navigator.vibrate) navigator.vibrate(300);
 }
+
+function toggleMusic(){
+  if(!playing){
+    music.play();
+    musicBtn.innerHTML="🎧 Musik: ON";
+  }else{
+    music.pause();
+    musicBtn.innerHTML="🎧 Musik: OFF";
+  }
+  playing=!playing;
+}
+
+function toggleDark(){
+  document.body.classList.toggle("dark");
+}
+
+function shareWeb(){
+  if(navigator.share){
+    navigator.share({
+      title:"Pelan-Pelan, adekk Bakal Baik-Baik Aja",
+      text:Semangat ya ${Adekku} 🤍,
+      url:location.href
+    });
+  }else{
+    alert("Copy link ini ya 🤍\n"+location.href);
+  }
+}
+
+setInterval(()=>{
+  const h=document.createElement("div");
+  h.className="heart";
+  h.innerHTML="💖";
+  h.style.left=Math.random()*100+"vw";
+  document.body.appendChild(h);
+  setTimeout(()=>h.remove(),3000);
+},900);
 </script>
 
 </body>
